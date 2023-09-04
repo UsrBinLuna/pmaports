@@ -1,0 +1,65 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/(CHANGEME!)
+
+pkgname=linux-xiaomi-gauguin
+pkgver=4.19.288
+pkgrel=0
+pkgdesc="Xiaomi Mi 10T Lite 5G / Mi 10i / Redmi Note 9 Pro 5G kernel fork"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-gauguin"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	findutils
+	flex
+	openssl-dev
+	perl
+	linux-headers
+	python3
+	pythonispython3
+	python3
+	pythonispython3
+	xz
+"
+
+# Source
+_repository="android_kernel_xiaomi_gauguin"
+_commit="5904e3c290bf748124679d114568a1bbd9bdb915"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/xiaomi-sm7225/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	REPLACE_GCCH=0
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+
+	make dtbs_install O="$_outdir" ARCH="$_carch" \
+		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
+}
+
+sha512sums="
+a1d3709d42efb1201eb637c490b03cb68bb256d6728c4c020a24a9e5c330419c77452e617cff8439f57f642c677bb336594e5438b94ed9b5c9de9c4ee61996eb  linux-xiaomi-gauguin-5904e3c290bf748124679d114568a1bbd9bdb915.tar.gz
+17607a391b1c7ffb7801c899678654bf03ca904d179b62a44b9e9f80e9bc9a273ed5d7361937d00c4f5841d408d9ce3c0572f20b0f5d103c5bc63987360c893b  config-xiaomi-gauguin.aarch64
+"
