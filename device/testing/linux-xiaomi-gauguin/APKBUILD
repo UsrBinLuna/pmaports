@@ -3,7 +3,7 @@
 
 pkgname=linux-xiaomi-gauguin
 pkgver=4.19.288
-pkgrel=0
+pkgrel=1
 pkgdesc="Xiaomi Mi 10T Lite 5G / Mi 10i / Redmi Note 9 Pro 5G kernel fork"
 arch="aarch64"
 _carch="arm64"
@@ -49,12 +49,16 @@ build() {
 	unset LDFLAGS
 	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" vendor/qcom/gauguin-sm6350.dtb
 }
 
 package() {
 	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
 		"$_flavor" "$_outdir"
 
+	mkdir "$pkgdir"/boot/dtbs
+	cp "$_outdir"/arch/arm64/boot/dts/vendor/qcom/gauguin-sm6350.dtb "$pkgdir"/boot/dtbs/
+	ls "$pkgdir"/boot/dtbs
 	make dtbs_install O="$_outdir" ARCH="$_carch" \
 		INSTALL_DTBS_PATH="$pkgdir"/boot/dtbs
 }

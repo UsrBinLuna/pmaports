@@ -7,7 +7,7 @@ deviceinfo_name="Xiaomi Mi 10T Lite 5G / Mi 10i / Redmi Note 9 Pro 5G"
 deviceinfo_manufacturer="Xiaomi"
 deviceinfo_codename="xiaomi-gauguin"
 deviceinfo_year="2020"
-deviceinfo_dtb=""
+deviceinfo_dtb="gauguin-sm6350"
 deviceinfo_arch="aarch64"
 
 # Device related
